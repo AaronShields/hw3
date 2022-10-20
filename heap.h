@@ -1,5 +1,6 @@
 #ifndef HEAP_H
 #define HEAP_H
+#pragma warning(suppress: 4101)
 #include <functional>
 #include <stdexcept>
 #include <algorithm>
@@ -19,9 +20,9 @@ public:
    *          as an argument and returns a bool if the first argument has
    *          priority over the second.
    */
-  Heap(int m=2, PComparator c = PComparator()) : comparator(c){
+  Heap(int m=2, PComparator c = PComparator()) : data(0), m_ary(m), comparator(c) {
 
-    //data.resize(m);
+    
   }
 
   /**
@@ -38,14 +39,8 @@ public:
    * @param item item to heap
    */
   void push(const T& item){
-     length++;
-      if (length <= data.size())
-      data[length-1] = item;
-      else 
-      data.push_back(item);
-      fix_up(length - 1);
-
-      
+    data.push_back(item);
+		shiftUp(size() - 1);
   }
 
   /**
@@ -81,43 +76,77 @@ public:
    * 
    */
   size_t size() const{
-    return length ;
+    return data.size() ;
   }
 
 private:
   /// Add whatever helper functions and data members you need below
+  int m_ary;
   vector<T> data;
-  int length;
+
   PComparator comparator;
-  static int left(int i) { return 2*i + 1;}
-	static int right(int i) { return 2*i + 2;}
-	static int parent(int i) { return (i-1)/2;}
-
-  void fix_up(int i)
-	{
-	  for (int j = parent(i); (j>=0) && comparator(data[j], data[i]); i=j,j=parent(i))
-		swap(data[i], data[j]);
-	}
-
-  void fix_down(int i)
-	{
-	  T tmp = data[i];
-	  int j = left(i);
-
-	  while (j < length) {
-		if(j+1 < length && comparator(data[j], data[j+1])) j++;
-		
-		if (comparator(tmp, data[j])) {
-		  data[i] = data[j];
-		  i = j;
-		  j = left(i);
-		} else {
-		  break;
+  
+  T deleteAt(int ind) {
+		if (empty())
+			throw std::domain_error("You can't remove any element due to the heap is empty.");
+		else if (ind >= size()) {
+			throw std::domain_error("Position out of range");
 		}
-	  }
-	  data[i] = tmp;
+		else {
+			T elem = data[ind];
+			data[ind] = data[data.size() - 1];
+			data.pop_back();
+			if (!empty() && ind < size()) shiftDown(ind);
+			return elem;
+		}
 	}
 
+int daryChild(int child, int d) {
+		return m_ary * child + d;
+	}
+  int parent(int child) {
+		return (child - 1) / m_ary;
+	}
+
+  void shiftUp(int i) {
+		T elem = data[i];
+		int place = i;
+		while (place > 0 && comparator(elem, data[parent(place)])) {
+			data[place] = data[parent(place)];
+			place = parent(place);
+		}
+		data[place] = elem;
+	}
+
+void shiftDown(int i) {
+		T elem = data[i];
+		int place = i;
+		int child; 
+		bool end = false;
+		while (daryChild(place, 1) <= size() && !end) {
+			child = mostPriorityPosition(place);
+			
+			if (comparator(data[child], elem)) {
+				data[place] = data[child];
+				place = child;
+			}
+			else end = true;
+		}
+		data[place] = elem;
+	}
+
+  int mostPriorityPosition(int i) {
+		int result = daryChild(i, 1);
+		int d = 2;
+		int pos = daryChild(i, d);
+		while (d <= m_ary && pos < size()) {
+			if (comparator(data[pos], data[result])) {
+				result = pos;
+			}
+			pos = daryChild(i, d++);
+		}
+		return result;
+	}
 
 };
 
@@ -140,8 +169,12 @@ T const & Heap<T,PComparator>::top() const
   }
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
+  else{
+      return data[0];
+  }
+  
 
-  return data[0];
+  
 
 }
 
@@ -158,10 +191,11 @@ void Heap<T,PComparator>::pop()
     throw std::underflow_error("Heap is empty");
 
 
+  }else{
+    deleteAt(0);
   }
 
-  swap(data[0], data[--length]);
-	fix_down(0);
+  
 	
 
 }

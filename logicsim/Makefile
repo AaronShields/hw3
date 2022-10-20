@@ -8,6 +8,7 @@ all: logicsim
 logicsim: $(OBJS)
 	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ $(OBJS)
 
+
 logicsim.o: logicsim.cpp wire.h gate.h circuit.h 
 	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c logicsim.cpp
 wire.o: wire.cpp wire.h 

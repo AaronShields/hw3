@@ -9,6 +9,7 @@
 class Circuit 
 {
 	public:
+	
 		Circuit();
 		~Circuit();
 		void test();
