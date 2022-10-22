@@ -1,6 +1,6 @@
 #ifndef HEAP_H
 #define HEAP_H
-#pragma warning(suppress: 4101)
+
 #include <functional>
 #include <stdexcept>
 #include <algorithm>
@@ -29,9 +29,12 @@ public:
   * @brief Destroy the Heap object
   * 
   */
+
   ~Heap(){
-    data.clear();
+    //data.clear();
+    data.erase( data.begin() , data.end() );
   }
+
 
   /**
    * @brief Push an item to the heap
@@ -75,7 +78,7 @@ public:
    * @brief Returns size of the heap
    * 
    */
-  size_t size() const{
+  int size() const{
     return data.size() ;
   }
 

@@ -14,6 +14,7 @@
 Circuit::Circuit() : m_current_time(0)
 {
     
+    
 }
 
 Circuit::~Circuit()
